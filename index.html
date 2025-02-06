@@ -4,105 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>С Днём Святого Валентина!</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #ffebee;
-            color: #c62828;
-            text-align: center;
-            padding: 50px;
-            overflow: hidden;
-            position: relative;
-        }
-        h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            animation: fadeIn 2s ease-in-out;
-        }
-        p {
-            font-size: 1.5em;
-            margin-bottom: 30px;
-            animation: slideIn 2s ease-in-out;
-        }
-        .heart {
-            color: #e91e63;
-            font-size: 4em;
-            animation: heartbeat 1.5s infinite;
-        }
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        .photo {
-            margin-top: 30px;
-            border-radius: 50%;
-            width: 200px;
-            height: 200px;
-            object-fit: cover;
-            border: 5px solid #e91e63;
-            animation: zoomIn 2s ease-in-out;
-        }
-        .message {
-            margin-top: 30px;
-            font-size: 1.2em;
-            line-height: 1.6;
-            animation: fadeIn 3s ease-in-out;
-        }
-        .hearts-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        .heart-animation {
-            position: absolute;
-            color: #e91e63;
-            font-size: 20px;
-            animation: float 5s infinite ease-in-out;
-        }
-        @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-        }
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-        @keyframes slideIn {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(0); }
-        }
-        @keyframes zoomIn {
-            0% { transform: scale(0); }
-            100% { transform: scale(1); }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="hearts-container">
-        <!-- Сердечки, которые будут летать по экрану -->
-        <div class="heart-animation" style="left: 10%; animation-delay: 0s;">❤️</div>
-        <div class="heart-animation" style="left: 20%; animation-delay: 1s;">❤️</div>
-        <div class="heart-animation" style="left: 30%; animation-delay: 2s;">❤️</div>
-        <div class="heart-animation" style="left: 40%; animation-delay: 3s;">❤️</div>
-        <div class="heart-animation" style="left: 50%; animation-delay: 4s;">❤️</div>
-        <div class="heart-animation" style="left: 60%; animation-delay: 5s;">❤️</div>
-        <div class="heart-animation" style="left: 70%; animation-delay: 6s;">❤️</div>
-        <div class="heart-animation" style="left: 80%; animation-delay: 7s;">❤️</div>
-        <div class="heart-animation" style="left: 90%; animation-delay: 8s;">❤️</div>
+    <div class="container">
+        <h1 class="fade-in">С Днём Святого Валентина, любимая! ❤️</h1>
+        <p class="fade-in delay">Ты – самое прекрасное, что есть в этом мире!</p>
+        <button class="surprise-btn">Нажми меня!</button>
+        <div class="hidden-message">Ты самая лучшая! 💖</div>
     </div>
-    <h1>С Днём Святого Валентина!</h1>
-    <div class="heart">❤️</div>
-    <p>Дорогая Полиночка,</p>
-    <div class="message">
-        <p>Ты самая прекрасная, добрая и удивительная девушка на свете! Спасибо за то, что ты есть в моей жизни. Ты делаешь каждый мой день ярче и счастливее.</p>
-        <p>Я хочу, чтобы ты знала, как сильно ты для меня значишь. Ты — моё счастье, моя любовь и моё вдохновение.</p>
-        <p>С любовью, Родной ❤️</p>
-    </div>
-    <img src="photo.jpg" alt="Твоя фотография" class="photo">
+    
+    <script src="script.js"></script>
 </body>
 </html>
