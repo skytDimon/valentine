@@ -1,152 +1,75 @@
-let c = document.querySelector("canvas"),
-  $ = c.getContext("2d"),
-  w = (c.width = innerWidth),
-  h = (c.height = innerHeight),
-  random = Math.random;
+const canvas = document.getElementById("heartCanvas");
+const ctx = canvas.getContext("2d");
 
-$.fillStyle = "black";
-$.fillRect(0, 0, w, h);
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-let heartPos = function(rad) {
-  return [
-    Math.pow(Math.sin(rad), 3),
-    -(
-      15 * Math.cos(rad) -
-      5 * Math.cos(2 * rad) -
-      2 * Math.cos(3 * rad) -
-      Math.cos(4 * rad)
-    )
-  ];
-};
+const particles = [];
+const heartPoints = [];
 
-let scaleAndTranslate = function(pos, sx, sy, dx, dy) {
-  return [dx + pos[0] * sx, dy + pos[1] * sy];
-};
+const HEART_SIZE = 10;  // Уменьшает или увеличивает сердце
+const NUM_PARTICLES = 500; // Количество частиц
+const SPEED = 0.05;  // Скорость движения частиц
 
-window.addEventListener("resize", function() {
-  w = c.width = innerWidth;
-  h = c.height = innerHeight;
-  $.fillStyle = "black";
-  $.fillRect(0, 0, w, h);
-});
-
-let traceCount = 50,
-  pointsOrigin = [],
-  dr = 0.1,
-  i;
-
-for (i = 0; i < Math.PI * 2; i += dr)
-  pointsOrigin.push(scaleAndTranslate(heartPos(i), 210, 13, 0, 0));
-
-for (i = 0; i < Math.PI * 2; i += dr)
-  pointsOrigin.push(scaleAndTranslate(heartPos(i), 150, 9, 0, 0));
-
-for (i = 0; i < Math.PI * 2; i += dr)
-  pointsOrigin.push(scaleAndTranslate(heartPos(i), 90, 5, 0, 0));
-
-let heartPointsCount = pointsOrigin.length,
-  targetPoints = [];
-
-let pulse = function(kx, ky) {
-  for (i = 0; i < pointsOrigin.length; i++) {
-    targetPoints[i] = [];
-    targetPoints[i][0] = kx * pointsOrigin[i][0] + w / 2;
-    targetPoints[i][1] = ky * pointsOrigin[i][1] + h / 2;
-  }
-};
-
-let e = [];
-for (i = 0; i < heartPointsCount; i++) {
-  let x = random() * w;
-  let y = random() * h;
-
-  e[i] = {
-    vx: 0,
-    vy: 0,
-    R: 2,
-    speed: random() + 5,
-    q: ~~(random() * heartPointsCount),
-    D: 2 * (i % 2) - 1,
-    force: 0.2 * random() + 0.7,
-    f:
-      "hsla(0," +
-      ~~(40 * random() + 60) +
-      "%," +
-      ~~(60 * random() + 20) +
-      "%,.3)",
-    trace: []
-  };
-
-  for (let k = 0; k < traceCount; k++)
-    e[i].trace[k] = {
-      x: x,
-      y: y
+// Функция для расчета координат сердца
+function heartFunction(t) {
+    return {
+        x: 16 * Math.pow(Math.sin(t), 3),
+        y: -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t))
     };
 }
 
-let config = {
-  traceK: 0.4,
-  timeDelta: 0.01
-};
+// Создание точек сердца
+for (let t = 0; t < Math.PI * 2; t += 0.1) {
+    let point = heartFunction(t);
+    heartPoints.push({
+        x: point.x * HEART_SIZE + canvas.width / 2,
+        y: point.y * HEART_SIZE + canvas.height / 2
+    });
+}
 
-let time = 0;
-let loop = function() {
-  let n = -Math.cos(time);
-
-  pulse((1 + n) * 0.5, (1 + n) * 0.5);
-
-  time += (Math.sin(time) < 0 ? 9 : n > 0.8 ? 0.2 : 1) * config.timeDelta;
-
-  $.fillStyle = "rgba(0,0,0,.1)";
-  $.fillRect(0, 0, w, h);
-
-  for (i = e.length; i--; ) {
-    let u = e[i],
-      q = targetPoints[u.q],
-      dx = u.trace[0].x - q[0],
-      dy = u.trace[1].y - q[1],
-      length = Math.sqrt(dx * dx + dy * dy);
-
-    if (10 > length) {
-      if (0.95 < random()) {
-        u.q = ~~(random() * heartPointsCount);
-      } else {
-        if (0.99 < random()) {
-          u.D *= -1;
-        }
-
-        u.q += u.D;
-        u.q %= heartPointsCount;
-
-        if (0 > u.q) {
-          u.q += heartPointsCount;
-        }
-      }
+// Класс частицы
+class Particle {
+    constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.target = heartPoints[Math.floor(Math.random() * heartPoints.length)];
+        this.radius = Math.random() * 3 + 1;
+        this.color = `rgba(255, ${Math.random() * 100 + 50}, ${Math.random() * 100 + 50}, 1)`;
     }
 
-    u.vx += (-dx / length) * u.speed;
-    u.vy += (-dy / length) * u.speed;
-
-    u.trace[0].x += u.vx;
-    u.trace[0].y += u.vy;
-
-    u.vx *= u.force;
-    u.vy *= u.force;
-
-    for (k = 0; k < u.trace.length - 1; ) {
-      let T = u.trace[k];
-      let N = u.trace[++k];
-      N.x -= config.traceK * (N.x - T.x);
-      N.y -= config.traceK * (N.y - T.y);
+    update() {
+        this.x += (this.target.x - this.x) * SPEED;
+        this.y += (this.target.y - this.y) * SPEED;
     }
 
-    $.fillStyle = u.f;
-    for (k = 0; k < u.trace.length; k++) {
-      $.fillRect(u.trace[k].x, u.trace[k].y, 1, 1);
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
     }
-  }
+}
 
-  requestAnimationFrame(loop, c);
-};
+// Создание частиц
+for (let i = 0; i < NUM_PARTICLES; i++) {
+    particles.push(new Particle());
+}
 
-loop();
+// Анимация
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(particle => {
+        particle.update();
+        particle.draw();
+    });
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+// Обновление размеров canvas при изменении окна
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
